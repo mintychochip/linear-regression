@@ -56,8 +56,8 @@ MAX_ZOOMS = 50
 
 offsets = logspace(1e-6, 1, N_GRID // 2)
 
-beta_lo,  beta_hi  = -500.0,   500.0
-alpha_lo, alpha_hi = -10000.0, 10000.0
+beta_lo,  beta_hi  = -5000.0,   5000.0
+alpha_lo, alpha_hi = -100000.0, 100000.0
 
 print(f"Data: {n} points  |  Height [{min(x)}, {max(x)}]  |  Weight [{min(y)}, {max(y)}]")
 print()
@@ -75,8 +75,8 @@ for zoom in range(MAX_ZOOMS):
         print(f"\n  Converged after {zoom+1} iterations (beta and alpha stable to 3 decimal places)")
         break
     prev_beta, prev_alpha = best_beta, best_alpha
-    beta_half  = (beta_hi  - beta_lo)  / 20
-    alpha_half = (alpha_hi - alpha_lo) / 20
+    beta_half  = (beta_hi  - beta_lo)  / 2
+    alpha_half = (alpha_hi - alpha_lo) / 2
     beta_lo,  beta_hi  = best_beta  - beta_half,  best_beta  + beta_half
     alpha_lo, alpha_hi = best_alpha - alpha_half, best_alpha + alpha_half
 

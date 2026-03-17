@@ -159,7 +159,7 @@
     <div class="steps">
       <div class="step">
         <div class="step-num">1</div>
-        <div class="step-text"><strong>Wide range</strong> — start with &beta;&nbsp;&isin;&nbsp;[&minus;500, 500] and &alpha;&nbsp;&isin;&nbsp;[&minus;10000, 10000].</div>
+        <div class="step-text"><strong>Wide range</strong> — start with &beta;&nbsp;&isin;&nbsp;[&minus;5000, 5000] and &alpha;&nbsp;&isin;&nbsp;[&minus;100000, 100000].</div>
       </div>
       <div class="step">
         <div class="step-num">2</div>
@@ -167,7 +167,7 @@
       </div>
       <div class="step">
         <div class="step-num">3</div>
-        <div class="step-text"><strong>Find minimum SSE</strong> — evaluate all (&beta;, &alpha;) pairs and keep the best.</div>
+        <div class="step-text"><strong>Find minimum SSE</strong> — evaluate each (&beta;, &alpha;) pair at the current step size and keep the best.</div>
       </div>
       <div class="step">
         <div class="step-num">4</div>
@@ -241,9 +241,6 @@
         <p>Model generalizes to the <strong>test set (n = 10)</strong>, producing height-based weight predictions consistent with training trends.</p>
       </div>
     </div>
-    <p style="margin-top:20px; font-size:0.8rem; color:#999; font-style:italic;">
-      Future work: extend to multiple regression; evaluate prediction intervals on held-out data.
-    </p>
   </div>
 
 </div>
