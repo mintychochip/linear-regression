@@ -6,309 +6,418 @@
 <title>Linear Regression – Army Training Data</title>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
-
-  :root {
-    --blue: #002855;
-    --gold: #F5A800;
-    --light: #f4f6f9;
-    --text: #1a1a2e;
-  }
+  :root { --blue: #002855; --gold: #F5A800; --light: #f4f6f9; --text: #1a1a2e; }
 
   body {
     font-family: 'Georgia', serif;
     background: #1a1a2e;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    min-height: 100vh;
-    padding: 20px;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    min-height: 100vh; padding: 20px;
   }
 
-  .deck {
-    width: 100%;
-    max-width: 860px;
-  }
+  .deck { width: 100%; max-width: 900px; }
 
   .slide {
-    display: none;
-    background: var(--light);
-    border-radius: 10px;
-    min-height: 480px;
-    padding: 50px 60px;
-    position: relative;
-    overflow: hidden;
-    box-shadow: 0 8px 40px rgba(0,0,0,0.5);
+    display: none; background: var(--light);
+    border-radius: 12px; min-height: 500px;
+    padding: 44px 56px; position: relative;
+    overflow: hidden; box-shadow: 0 12px 48px rgba(0,0,0,0.55);
   }
-
   .slide.active { display: flex; flex-direction: column; justify-content: center; }
-
-  /* accent bar */
   .slide::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; right: 0;
-    height: 6px;
-    background: var(--gold);
+    content: ''; position: absolute; top: 0; left: 0; right: 0;
+    height: 7px; background: var(--gold);
   }
-
-  /* slide number badge */
   .slide::after {
-    content: attr(data-num);
-    position: absolute;
-    bottom: 18px; right: 26px;
-    font-size: 12px;
-    color: #999;
-    font-family: 'Arial', sans-serif;
+    content: attr(data-num); position: absolute; bottom: 16px; right: 24px;
+    font-size: 12px; color: #aaa; font-family: Arial, sans-serif;
   }
 
-  /* ── TITLE SLIDE ── */
-  .slide-title { background: var(--blue); color: white; }
-  .slide-title::before { background: var(--gold); }
-  .slide-title h1 {
-    font-size: 2rem;
-    line-height: 1.3;
-    margin-bottom: 16px;
-    color: white;
-  }
-  .slide-title .subtitle {
-    font-size: 1rem;
-    color: var(--gold);
-    font-style: italic;
-    margin-bottom: 30px;
-  }
+  /* Title */
+  .slide-title { background: var(--blue); }
+  .slide-title h1 { font-size: 2.1rem; line-height: 1.3; color: white; margin-bottom: 14px; }
+  .slide-title .subtitle { font-size: 1rem; color: var(--gold); font-style: italic; margin-bottom: 36px; }
   .slide-title .meta {
-    font-size: 0.85rem;
-    color: rgba(255,255,255,0.65);
-    font-family: Arial, sans-serif;
-    border-top: 1px solid rgba(255,255,255,0.2);
-    padding-top: 16px;
+    font-size: 0.82rem; color: rgba(255,255,255,0.55); font-family: Arial, sans-serif;
+    border-top: 1px solid rgba(255,255,255,0.15); padding-top: 16px; line-height: 1.8;
   }
   .csub-logo {
-    position: absolute;
-    top: 30px; right: 40px;
-    font-family: Arial, sans-serif;
-    font-weight: 900;
-    font-size: 1.4rem;
-    color: var(--gold);
-    letter-spacing: 1px;
+    position: absolute; top: 28px; right: 40px;
+    font-family: Arial, sans-serif; font-weight: 900;
+    font-size: 1.4rem; color: var(--gold); letter-spacing: 2px;
   }
 
-  /* ── CONTENT SLIDES ── */
-  h2 {
-    font-size: 1.4rem;
-    color: var(--blue);
-    border-bottom: 3px solid var(--gold);
-    padding-bottom: 8px;
-    margin-bottom: 24px;
-  }
+  h2 { font-size: 1.3rem; color: var(--blue); padding-bottom: 10px; margin-bottom: 22px; border-bottom: 3px solid var(--gold); }
+  p { font-size: 0.93rem; color: var(--text); line-height: 1.75; }
 
-  p, li { font-size: 0.97rem; color: var(--text); line-height: 1.7; }
-  ul { padding-left: 22px; }
-  ul li { margin-bottom: 8px; }
+  /* Data slide */
+  .data-layout { display: flex; gap: 28px; align-items: flex-start; }
+  .data-stats { flex-shrink: 0; width: 190px; display: flex; flex-direction: column; gap: 12px; }
+  .box { background: white; border-left: 5px solid var(--gold); border-radius: 6px; padding: 14px 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.07); }
+  .box .label { font-size: 0.7rem; font-family: Arial, sans-serif; text-transform: uppercase; letter-spacing: 1.2px; color: #888; margin-bottom: 5px; }
+  .box .val { font-size: 1.05rem; font-weight: bold; color: var(--blue); }
+  .box .range { font-size: 0.78rem; color: #999; margin-top: 3px; }
+  canvas { border-radius: 8px; display: block; }
 
-  .highlight {
-    display: inline-block;
-    background: var(--blue);
-    color: var(--gold);
-    font-family: 'Courier New', monospace;
-    font-size: 1rem;
-    padding: 10px 20px;
-    border-radius: 6px;
-    margin: 14px 0;
-  }
+  /* Methodology */
+  .steps { display: flex; flex-direction: column; gap: 11px; }
+  .step { display: flex; align-items: flex-start; gap: 14px; background: white; border-radius: 8px; padding: 12px 16px; box-shadow: 0 1px 5px rgba(0,0,0,0.06); }
+  .step-num { flex-shrink: 0; width: 26px; height: 26px; background: var(--blue); color: var(--gold); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: Arial, sans-serif; font-weight: bold; font-size: 0.82rem; }
+  .step-text { font-size: 0.88rem; color: var(--text); line-height: 1.6; padding-top: 3px; }
+  .step-text strong { color: var(--blue); }
 
-  .two-col {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 24px;
-    margin-top: 8px;
+  /* Demo slide */
+  .demo-canvas-wrap { position: relative; }
+  .demo-stats {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-top: 14px; background: white; border-radius: 8px;
+    padding: 12px 20px; box-shadow: 0 1px 6px rgba(0,0,0,0.08);
   }
-
-  .box {
-    background: white;
-    border-left: 4px solid var(--gold);
-    border-radius: 4px;
-    padding: 14px 18px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.07);
-  }
-  .box .label {
-    font-size: 0.75rem;
-    font-family: Arial, sans-serif;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    color: var(--gold);
-    margin-bottom: 4px;
-  }
-  .box .val {
-    font-size: 1.05rem;
-    font-weight: bold;
-    color: var(--blue);
-  }
-
-  table {
-    width: 100%;
-    border-collapse: collapse;
-    font-family: 'Courier New', monospace;
-    font-size: 0.85rem;
-    margin-top: 12px;
-  }
-  th {
-    background: var(--blue);
-    color: var(--gold);
-    padding: 8px 12px;
-    text-align: center;
-  }
-  td {
-    padding: 7px 12px;
-    text-align: center;
-    border-bottom: 1px solid #ddd;
-    color: var(--text);
-  }
-  tr:nth-child(even) td { background: #eef1f6; }
-  tr:last-child td { font-weight: bold; color: var(--blue); background: #e8f0fb; }
-
-  /* ── NAV ── */
-  .nav {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 16px;
-    margin-top: 20px;
-  }
-  .nav button {
-    background: var(--gold);
-    color: var(--blue);
-    border: none;
-    padding: 10px 28px;
-    font-size: 0.9rem;
-    font-weight: bold;
-    font-family: Arial, sans-serif;
-    border-radius: 6px;
-    cursor: pointer;
+  .stat { text-align: center; }
+  .stat .slabel { font-size: 0.68rem; font-family: Arial, sans-serif; text-transform: uppercase; letter-spacing: 1px; color: #999; }
+  .stat .sval { font-size: 1rem; font-weight: bold; color: var(--blue); margin-top: 2px; font-family: 'Courier New', monospace; }
+  .demo-controls { display: flex; align-items: center; gap: 10px; }
+  .demo-btn {
+    background: var(--blue); color: var(--gold); border: none;
+    padding: 8px 18px; font-size: 0.82rem; font-weight: bold;
+    font-family: Arial, sans-serif; border-radius: 5px; cursor: pointer;
     transition: opacity 0.2s;
   }
-  .nav button:hover { opacity: 0.85; }
-  .nav button:disabled { opacity: 0.3; cursor: default; }
-  .nav .counter {
-    color: rgba(255,255,255,0.7);
-    font-family: Arial, sans-serif;
-    font-size: 0.85rem;
-    min-width: 60px;
-    text-align: center;
+  .demo-btn:hover { opacity: 0.8; }
+  .demo-btn:disabled { opacity: 0.3; cursor: default; }
+  .demo-btn.play { background: var(--gold); color: var(--blue); }
+  .dots { display: flex; gap: 6px; }
+  .dot { width: 9px; height: 9px; border-radius: 50%; background: #ddd; transition: background 0.3s; }
+  .dot.done { background: var(--blue); }
+  .dot.active { background: var(--gold); }
+  .converged-badge {
+    display: none; background: #e8f5e9; color: #2e7d32;
+    border: 1.5px solid #a5d6a7; border-radius: 20px;
+    font-family: Arial, sans-serif; font-size: 0.78rem; font-weight: bold;
+    padding: 4px 12px;
   }
+
+  /* Conclusion */
+  .equation { background: var(--blue); color: var(--gold); font-family: 'Courier New', monospace; font-size: 1.2rem; text-align: center; padding: 16px 24px; border-radius: 8px; margin-bottom: 22px; }
+  .findings { display: flex; flex-direction: column; gap: 11px; }
+  .finding { display: flex; align-items: flex-start; gap: 12px; }
+  .finding .icon { flex-shrink: 0; width: 22px; height: 22px; background: var(--gold); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; margin-top: 2px; }
+  .finding p { font-size: 0.9rem; }
+
+  /* Nav */
+  .nav { display: flex; align-items: center; justify-content: center; gap: 16px; margin-top: 20px; }
+  .nav button { background: var(--gold); color: var(--blue); border: none; padding: 10px 30px; font-size: 0.9rem; font-weight: bold; font-family: Arial, sans-serif; border-radius: 6px; cursor: pointer; transition: opacity 0.2s; }
+  .nav button:hover { opacity: 0.85; }
+  .nav button:disabled { opacity: 0.25; cursor: default; }
+  .nav .counter { color: rgba(255,255,255,0.6); font-family: Arial, sans-serif; font-size: 0.85rem; min-width: 60px; text-align: center; }
 </style>
 </head>
 <body>
-
 <div class="deck">
 
-  <!-- SLIDE 1: TITLE -->
+  <!-- 1: Title -->
   <div class="slide slide-title active" data-num="1 / 5">
     <div class="csub-logo">CSUB</div>
     <h1>Brute-Force Linear Regression<br>on Army Training Data</h1>
     <div class="subtitle">A Log-Scale Grid-Search Approach to Ordinary Least Squares</div>
     <div class="meta">
-      Department of Computer Science &amp; Engineering &nbsp;|&nbsp; California State University, Bakersfield &nbsp;|&nbsp; 2026
+      Department of Computer Science &amp; Engineering<br>
+      California State University, Bakersfield &bull; 2026
     </div>
   </div>
 
-  <!-- SLIDE 2: DATA -->
+  <!-- 2: Data + scatter plot -->
   <div class="slide" data-num="2 / 5">
-    <h2>Dataset Overview</h2>
-    <p>The dataset consists of <strong>50 U.S. Army trainees</strong> with two measured variables:</p>
-    <div class="two-col" style="margin-top:20px;">
-      <div class="box">
-        <div class="label">Predictor (X)</div>
-        <div class="val">Height (inches)</div>
-        <div style="font-size:0.82rem;color:#666;margin-top:4px;">Range: 64 – 79 in</div>
+    <h2>Dataset</h2>
+    <div class="data-layout">
+      <div style="flex:1;">
+        <canvas id="c-scatter" height="268"></canvas>
       </div>
-      <div class="box">
-        <div class="label">Response (Y)</div>
-        <div class="val">Weight (lbs)</div>
-        <div style="font-size:0.82rem;color:#666;margin-top:4px;">Range: 135 – 275 lbs</div>
+      <div class="data-stats">
+        <div class="box">
+          <div class="label">Predictor &nbsp;X</div>
+          <div class="val">Height</div>
+          <div class="range">64 – 79 in &nbsp;(n = 50)</div>
+        </div>
+        <div class="box">
+          <div class="label">Response &nbsp;Y</div>
+          <div class="val">Weight</div>
+          <div class="range">135 – 275 lbs</div>
+        </div>
+        <p style="font-size:0.85rem; margin-top:4px;">
+          Goal: fit &nbsp;<strong><em>ŷ = &beta;x + &alpha;</em></strong><br>
+          by minimizing SSE — no calculus, no matrices.
+        </p>
       </div>
     </div>
-    <p style="margin-top:22px;">
-      Objective: estimate a linear model <em>ŷ = &beta;·x + &alpha;</em> that minimizes the
-      <strong>Sum of Squared Errors (SSE)</strong> across all observations.
-    </p>
   </div>
 
-  <!-- SLIDE 3: METHOD -->
+  <!-- 3: Methodology -->
   <div class="slide" data-num="3 / 5">
     <h2>Methodology: Log-Zoom Grid Search</h2>
-    <ul>
-      <li><strong>Step 1 – Wide Search:</strong> Define a broad initial range for slope <em>&beta;</em> and intercept <em>&alpha;</em>.</li>
-      <li><strong>Step 2 – Log-Spaced Sampling:</strong> Sample candidate values on a logarithmic scale to maintain precision across orders of magnitude without clustering near zero.</li>
-      <li><strong>Step 3 – Minimum SSE:</strong> Evaluate SSE for all grid pairs; select <em>(&beta;*, &alpha;*)</em> with lowest error.</li>
-      <li><strong>Step 4 – Zoom In:</strong> Shrink the search window by 10× around the best candidate and repeat.</li>
-      <li><strong>Convergence:</strong> Process repeats until both <em>&beta;</em> and <em>&alpha;</em> change by less than 0.0005 between iterations — guaranteeing 3 decimal places of stability. A hard cap of 50 iterations prevents infinite loops.</li>
-    </ul>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-text"><strong>Wide range</strong> — start with &beta;&nbsp;&isin;&nbsp;[&minus;500, 500] and &alpha;&nbsp;&isin;&nbsp;[&minus;10000, 10000].</div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-text"><strong>Log-spaced sampling</strong> — candidates spaced on a log scale so precision is maintained across all magnitudes.</div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-text"><strong>Find minimum SSE</strong> — evaluate all (&beta;, &alpha;) pairs and keep the best.</div>
+      </div>
+      <div class="step">
+        <div class="step-num">4</div>
+        <div class="step-text"><strong>Zoom in 10&times;</strong> — shrink the search window around the best point and repeat.</div>
+      </div>
+      <div class="step">
+        <div class="step-num">&#10003;</div>
+        <div class="step-text"><strong>Stop</strong> when both &beta; and &alpha; are stable to <strong>3 decimal places</strong> between iterations.</div>
+      </div>
+    </div>
   </div>
 
-  <!-- SLIDE 4: RESULTS -->
+  <!-- 4: Convergence demo -->
   <div class="slide" data-num="4 / 5">
-    <h2>Results</h2>
-    <p>The algorithm converged by iteration 5, yielding:</p>
-    <div class="highlight">ŷ = 5.354 · height − 186.994</div>
-    <table>
-      <thead>
-        <tr><th>Zoom</th><th>&beta; (slope)</th><th>&alpha; (intercept)</th><th>SSE</th></tr>
-      </thead>
-      <tbody>
-        <tr><td>1</td><td>4.3487</td><td>−114.98</td><td>31,962.89</td></tr>
-        <tr><td>2</td><td>5.3534</td><td>−185.52</td><td>31,461.72</td></tr>
-        <tr><td>3</td><td>5.3547</td><td>−187.04</td><td>31,359.74</td></tr>
-        <tr><td>4</td><td>5.3540</td><td>−186.99</td><td>31,359.74</td></tr>
-        <tr><td>5</td><td>5.3540</td><td>−186.99</td><td>31,359.74</td></tr>
-      </tbody>
-    </table>
-    <p style="margin-top:14px; font-size:0.88rem; color:#555;">
-      ✓ Converged when <em>&beta;</em> and <em>&alpha;</em> both stable to 3 decimal places &nbsp;|&nbsp; Result <strong>identical</strong> to analytical OLS solution.
-    </p>
+    <h2>Live Convergence Demo</h2>
+    <div class="demo-canvas-wrap">
+      <canvas id="c-demo" height="268"></canvas>
+    </div>
+    <div class="demo-stats">
+      <div class="stat">
+        <div class="slabel">Zoom</div>
+        <div class="sval" id="d-zoom">—</div>
+      </div>
+      <div class="stat">
+        <div class="slabel">&beta; (slope)</div>
+        <div class="sval" id="d-beta">—</div>
+      </div>
+      <div class="stat">
+        <div class="slabel">&alpha; (intercept)</div>
+        <div class="sval" id="d-alpha">—</div>
+      </div>
+      <div class="stat">
+        <div class="slabel">SSE</div>
+        <div class="sval" id="d-sse">—</div>
+      </div>
+      <div class="demo-controls">
+        <div class="dots" id="d-dots">
+          <div class="dot" data-i="0"></div>
+          <div class="dot" data-i="1"></div>
+          <div class="dot" data-i="2"></div>
+          <div class="dot" data-i="3"></div>
+          <div class="dot" data-i="4"></div>
+        </div>
+        <div class="converged-badge" id="d-badge">&#10003; Converged</div>
+        <button class="demo-btn" id="d-back" onclick="demoStep(-1)" disabled>&#8592;</button>
+        <button class="demo-btn play" id="d-play" onclick="demoPlay()">&#9654; Play</button>
+        <button class="demo-btn" id="d-fwd" onclick="demoStep(1)">&#8594;</button>
+      </div>
+    </div>
   </div>
 
-  <!-- SLIDE 5: CONCLUSION -->
+  <!-- 5: Conclusion -->
   <div class="slide" data-num="5 / 5">
     <h2>Conclusion</h2>
-    <ul>
-      <li>The log-zoom brute-force method <strong>successfully recovered the optimal OLS parameters</strong> without calculus or matrix operations.</li>
-      <li>Logarithmic spacing ensures <strong>no precision is lost</strong> when searching across wide parameter ranges.</li>
-      <li>Convergence is driven by a <strong>3 decimal place stability criterion</strong> on both parameters — no fixed iteration count.</li>
-      <li>Applied to the test set (n = 10), the model produces height-based weight predictions consistent with training data trends.</li>
-    </ul>
-    <p style="margin-top:24px; font-size:0.85rem; color:#888; font-style:italic;">
-      Future work: extend to multiple regression and evaluate prediction interval coverage on held-out data.
+    <div class="equation">ŷ &nbsp;=&nbsp; 5.354 &middot; height &nbsp;&minus;&nbsp; 186.994</div>
+    <div class="findings">
+      <div class="finding">
+        <div class="icon">&#10003;</div>
+        <p>Brute-force grid search <strong>recovered the exact OLS solution</strong> — confirmed against the closed-form analytical answer.</p>
+      </div>
+      <div class="finding">
+        <div class="icon">&#10003;</div>
+        <p><strong>Logarithmic spacing</strong> preserves precision when scanning a wide initial parameter range.</p>
+      </div>
+      <div class="finding">
+        <div class="icon">&#10003;</div>
+        <p>Stopping when parameters are <strong>stable to 3 decimal places</strong> eliminates any fixed iteration count.</p>
+      </div>
+      <div class="finding">
+        <div class="icon">&#10003;</div>
+        <p>Model generalizes to the <strong>test set (n = 10)</strong>, producing height-based weight predictions consistent with training trends.</p>
+      </div>
+    </div>
+    <p style="margin-top:20px; font-size:0.8rem; color:#999; font-style:italic;">
+      Future work: extend to multiple regression; evaluate prediction intervals on held-out data.
     </p>
   </div>
 
 </div>
 
-<!-- NAV -->
 <div class="nav">
-  <button id="prev" onclick="go(-1)" disabled>← Prev</button>
+  <button id="prev" onclick="go(-1)" disabled>&#8592; Prev</button>
   <span class="counter" id="counter">1 / 5</span>
-  <button id="next" onclick="go(1)">Next →</button>
+  <button id="next" onclick="go(1)">Next &#8594;</button>
 </div>
 
 <script>
-  const slides = document.querySelectorAll('.slide');
-  let cur = 0;
+const TRAIN = [
+  [71,180],[68,160],[68,205],[66,175],[77,213],[69,175],[72,250],[74,211],
+  [70,220],[72,160],[70,195],[69,155],[72,230],[75,250],[68,200],[69,196],
+  [67,170],[70,215],[70,167],[70,202],[71,165],[66,163],[66,175],[79,215],
+  [70,212],[64,135],[73,230],[71,176],[69,178],[73,200],[75,168],[71,205],
+  [65,150],[74,198],[71,151],[71,194],[68,150],[74,275],[68,170],[69,193],
+  [70,135],[67,188],[73,175],[68,190],[70,215],[66,145],[69,155],[69,185],
+  [75,222],[66,190]
+];
 
-  function go(dir) {
-    slides[cur].classList.remove('active');
-    cur = Math.max(0, Math.min(slides.length - 1, cur + dir));
-    slides[cur].classList.add('active');
-    document.getElementById('counter').textContent = (cur + 1) + ' / ' + slides.length;
-    document.getElementById('prev').disabled = cur === 0;
-    document.getElementById('next').disabled = cur === slides.length - 1;
+const ITERS = [
+  { beta: 4.348745, alpha: -114.9757, sse: 31962.89 },
+  { beta: 5.353362, alpha: -185.5237, sse: 31461.72 },
+  { beta: 5.354690, alpha: -187.0436, sse: 31359.74 },
+  { beta: 5.353981, alpha: -186.9939, sse: 31359.74 },
+  { beta: 5.353961, alpha: -186.9939, sse: 31359.74 },
+];
+
+const BLUE = '#002855', GOLD = '#F5A800';
+const XLO = 63, XHI = 80, YLO = 120, YHI = 285, PAD = 44;
+
+function scales(W, H) {
+  return {
+    x: v => PAD + (v - XLO) / (XHI - XLO) * (W - 2*PAD),
+    y: v => H - PAD - (v - YLO) / (YHI - YLO) * (H - 2*PAD)
+  };
+}
+
+function drawBase(ctx, W, H) {
+  ctx.clearRect(0, 0, W, H);
+  const s = scales(W, H);
+
+  // grid
+  ctx.strokeStyle = '#e8e8e8'; ctx.lineWidth = 1;
+  for (let h = 64; h <= 79; h += 1) { ctx.beginPath(); ctx.moveTo(s.x(h), PAD); ctx.lineTo(s.x(h), H-PAD); ctx.stroke(); }
+  for (let w = 140; w <= 280; w += 20) { ctx.beginPath(); ctx.moveTo(PAD, s.y(w)); ctx.lineTo(W-PAD, s.y(w)); ctx.stroke(); }
+
+  // axes
+  ctx.strokeStyle = '#bbb'; ctx.lineWidth = 1.5;
+  ctx.beginPath(); ctx.moveTo(PAD, PAD-4); ctx.lineTo(PAD, H-PAD); ctx.lineTo(W-PAD+4, H-PAD); ctx.stroke();
+
+  // tick labels
+  ctx.fillStyle = '#888'; ctx.font = '10px Arial'; ctx.textAlign = 'center';
+  for (let h = 64; h <= 79; h += 3) ctx.fillText(h, s.x(h), H-PAD+14);
+  ctx.textAlign = 'right';
+  for (let w = 140; w <= 280; w += 20) ctx.fillText(w, PAD-6, s.y(w)+4);
+
+  // axis titles
+  ctx.fillStyle = '#666'; ctx.font = 'bold 10px Arial'; ctx.textAlign = 'center';
+  ctx.fillText('Height (inches)', W/2, H-4);
+  ctx.save(); ctx.translate(11, H/2); ctx.rotate(-Math.PI/2);
+  ctx.fillText('Weight (lbs)', 0, 0); ctx.restore();
+
+  // points
+  TRAIN.forEach(([h, w]) => {
+    ctx.beginPath(); ctx.arc(s.x(h), s.y(w), 4.5, 0, 2*Math.PI);
+    ctx.fillStyle = BLUE; ctx.fill();
+    ctx.strokeStyle = 'rgba(255,255,255,0.8)'; ctx.lineWidth = 1; ctx.stroke();
+  });
+}
+
+function drawRegLine(ctx, W, H, beta, alpha, color, width, opacity) {
+  const s = scales(W, H);
+  ctx.save();
+  ctx.strokeStyle = color; ctx.lineWidth = width; ctx.globalAlpha = opacity;
+  ctx.beginPath(); ctx.moveTo(s.x(XLO), s.y(beta*XLO + alpha)); ctx.lineTo(s.x(XHI), s.y(beta*XHI + alpha));
+  ctx.stroke(); ctx.restore();
+}
+
+// Scatter slide
+function renderScatter() {
+  const c = document.getElementById('c-scatter');
+  c.width = c.parentElement.clientWidth || 500;
+  drawBase(c.getContext('2d'), c.width, c.height);
+}
+
+// Demo state
+let step = 0;
+let playTimer = null;
+
+function renderDemo() {
+  const c = document.getElementById('c-demo');
+  c.width = c.parentElement.clientWidth || 720;
+  const ctx = c.getContext('2d');
+  drawBase(ctx, c.width, c.height);
+
+  // draw all previous lines faded
+  for (let i = 0; i < step - 1; i++) {
+    const fade = 0.12 + 0.08 * i;
+    drawRegLine(ctx, c.width, c.height, ITERS[i].beta, ITERS[i].alpha, '#888', 1.5, fade);
   }
 
-  document.addEventListener('keydown', e => {
-    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') go(1);
-    if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')   go(-1);
+  // draw current line
+  if (step > 0) {
+    const it = ITERS[step - 1];
+    const isConverged = step === ITERS.length;
+    drawRegLine(ctx, c.width, c.height, it.beta, it.alpha, isConverged ? '#2e7d32' : GOLD, 2.5, 1);
+
+    // label on line
+    const s = scales(c.width, c.height);
+    const lx = s.x(76), ly = s.y(it.beta * 76 + it.alpha) - 10;
+    ctx.font = 'bold 11px Arial'; ctx.fillStyle = isConverged ? '#2e7d32' : '#b07700';
+    ctx.textAlign = 'left';
+    ctx.fillText(`zoom ${step}`, lx, ly);
+  }
+
+  // update stats panel
+  const it = step > 0 ? ITERS[step - 1] : null;
+  document.getElementById('d-zoom').textContent  = it ? `${step} / ${ITERS.length}` : '—';
+  document.getElementById('d-beta').textContent  = it ? it.beta.toFixed(4)          : '—';
+  document.getElementById('d-alpha').textContent = it ? it.alpha.toFixed(4)         : '—';
+  document.getElementById('d-sse').textContent   = it ? it.sse.toLocaleString()     : '—';
+
+  // dots
+  document.querySelectorAll('.dot').forEach((d, i) => {
+    d.className = 'dot' + (i < step - 1 ? ' done' : i === step - 1 ? ' active' : '');
   });
+
+  // converged badge
+  document.getElementById('d-badge').style.display = step === ITERS.length ? 'inline-flex' : 'none';
+
+  document.getElementById('d-back').disabled = step === 0;
+  document.getElementById('d-fwd').disabled  = step === ITERS.length;
+}
+
+function demoStep(dir) {
+  step = Math.max(0, Math.min(ITERS.length, step + dir));
+  renderDemo();
+}
+
+function demoPlay() {
+  if (playTimer) { clearInterval(playTimer); playTimer = null; document.getElementById('d-play').textContent = '▶ Play'; return; }
+  if (step === ITERS.length) { step = 0; renderDemo(); }
+  document.getElementById('d-play').textContent = '⏸ Pause';
+  playTimer = setInterval(() => {
+    step++;
+    renderDemo();
+    if (step === ITERS.length) {
+      clearInterval(playTimer); playTimer = null;
+      document.getElementById('d-play').textContent = '▶ Play';
+    }
+  }, 900);
+}
+
+// Slide nav
+const slides = document.querySelectorAll('.slide');
+let cur = 0;
+
+function go(dir) {
+  slides[cur].classList.remove('active');
+  cur = Math.max(0, Math.min(slides.length - 1, cur + dir));
+  slides[cur].classList.add('active');
+  document.getElementById('counter').textContent = (cur + 1) + ' / ' + slides.length;
+  document.getElementById('prev').disabled = cur === 0;
+  document.getElementById('next').disabled = cur === slides.length - 1;
+  if (cur === 1) renderScatter();
+  if (cur === 3) { step = 0; renderDemo(); }
+}
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'ArrowRight' || e.key === 'ArrowDown') go(1);
+  if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')   go(-1);
+});
 </script>
 </body>
 </html>
