@@ -360,7 +360,7 @@ function renderDemo() {
 
   // update stats panel
   const it = step > 0 ? ITERS[step - 1] : null;
-  document.getElementById('d-zoom').textContent  = it ? `${step} / ${ITERS.length}` : '—';
+  document.getElementById('d-zoom').textContent  = it ? `${step}` : '—';
   document.getElementById('d-beta').textContent  = it ? it.beta.toFixed(4)          : '—';
   document.getElementById('d-alpha').textContent = it ? it.alpha.toFixed(4)         : '—';
   document.getElementById('d-sse').textContent   = it ? it.sse.toLocaleString()     : '—';
