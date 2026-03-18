@@ -89,8 +89,16 @@ print(f"Analytical: weight = {beta_exact:.6f} * height + {alpha_exact:.4f}  (SSE
 
 test_heights = [r[0] for r in load_csv('LR_armyTesting.csv', num_columns=1)]
 
+actual_weight = [x[0] for x in load_csv('LR_armyResults.csv', num_columns=1)]
+
 print()
-print(f"{'#':>3}  {'Height':>7}  {'Predicted Weight':>16}")
-print("-" * 30)
-for i, h in enumerate(test_heights, 1):
-    print(f"{i:>3}  {h:>7.1f}  {best_beta * h + best_alpha:>16.2f}")
+print(f"{'#':>3}  {'Height':>7}  {'Predicted Weight':>16}  {'Actual Weight':>15}.")
+print("-" * 45)
+predicted_weight = []
+for i, h in enumerate(test_heights, 0):
+    w = best_beta * h + best_alpha
+    print(f"{i+1:>3}  {h:>7.1f}  {w:>10.2f} {actual_weight[i]:>18.2f}")
+    predicted_weight.append(round(w,2))
+
+sse_test = sum((p - a) ** 2 for p, a in zip(predicted_weight, actual_weight))
+print(f"\nSSE (predicted vs actual weight): {sse_test:.4f}")
